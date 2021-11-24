@@ -14,6 +14,7 @@ function App() {
     <NotesState>
     <Router>
     <Navbar/>  
+    <div className="container">
     <Switch>
           <Route exact path="/">
             <Home />
@@ -22,6 +23,7 @@ function App() {
             <About/>
           </Route>
         </Switch>
+        </div>
     </Router>
     </NotesState>
     </>
