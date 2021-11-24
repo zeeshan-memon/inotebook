@@ -2,9 +2,9 @@ const express = require("express");
 const router = express.Router();
 const User = require("../models/Users");
 const { body, validationResult } = require("express-validator");
-const bcrypt = require('bcryptjs');
-const jwt = require('jsonwebtoken');
-const fetchUser = require('../Middlware/fetchuser'); 
+const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
+const fetchUser = require("../Middlware/fetchuser");
 
 router.post(
   "/createUser",
@@ -25,13 +25,57 @@ router.post(
 
       const existingUser = await User.findOne({ email: req.body.email });
       if (existingUser) {
-        return res.status(200).json({ message: "User already exists" });
+        res.status(200).json({ message: "User already exists" });
       }
-      const salt = await bcrypt.genSalt(10)
-      req.body.password = await bcrypt.hash(req.body.password, salt)
+      const salt = await bcrypt.genSalt(10);
+      req.body.password = await bcrypt.hash(req.body.password, salt);
       const user = await User.create(req.body);
-      const token = jwt.sign({user}, 'shhhhh');
-      return res.status(200).json({token});
+      const data = {
+        user: {
+          id: user._id,
+        },
+      };
+      // const token = jwt.sign(data, "shhhhh");
+      res.status(200).json({ data });
+    } catch (error) {
+      console.log("error", error);
+      res.status(200).json({ error: error });
+    }
+  }
+);
+
+router.post(
+  "/login",
+  [
+    body("email", "Invalid Email").isEmail(),
+    body("password", "Password can not be blank").exists(),
+  ],
+  async (req, res) => {
+    try {
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        res.status(200).json({ errors: errors.array() });
+      }
+
+      const user = await User.findOne({ email: req.body.email });
+      if (!user) {
+        res
+          .status(200)
+          .json({ message: "Please try to login with correct credentials." });
+      }
+      const password = await bcrypt.compare(req.body.password, user.password);
+      if (!password) {
+        res
+          .status(200)
+          .json({ message: "Please try to login with correct credentials." });
+      }
+      const data = {
+        user: {
+          id: user._id,
+        },
+      };
+      const token = jwt.sign(data, "shhhhh");
+      return res.status(200).json({ token });
     } catch (error) {
       console.log("error", error);
       return res.status(200).json({ error: error });
@@ -39,59 +83,28 @@ router.post(
   }
 );
 
-
 router.post(
-    "/login",
-    [
-      body("email", "Invalid Email").isEmail(),      
-      body("password", "Password can not be blank").exists(),      
-    ],
-    async (req, res) => {
-      try {
-        const errors = validationResult(req);
-        if (!errors.isEmpty()) {
-          return res.status(200).json({ errors: errors.array() });
-        }
-  
-        const user = await User.findOne({ email: req.body.email });
-        if (!user) {
-          return res.status(200).json({ message: "Please try to login with correct credentials." });
-        }
-        const password = await bcrypt.compare(req.body.password, user.password);
-        if(!password){
-            return res.status(200).json({ message: "Please try to login with correct credentials." });
-        }
-        
-        const token = jwt.sign({user}, 'shhhhh');
-        return res.status(200).json({token});
-      } catch (error) {
-        console.log("error", error);
-        return res.status(200).json({ error: error });
+  "/getUser",
+  [body("id", "id can not be blank").exists()],
+  fetchUser,
+  async (req, res) => {
+    try {
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        return res.status(200).json({ errors: errors.array() });
       }
-    }
-  );
 
-  router.post(
-    "/getUser",
-    [
-      body("id", "id can not be blank").exists(),      
-    ],fetchUser,
-    async (req, res) => {
-      try {
-        const errors = validationResult(req);
-        if (!errors.isEmpty()) {
-          return res.status(200).json({ errors: errors.array() });
-        }
-  
-        const user = await User.findById({ _id: req.body.id }).select('-password');
-        if (!user) {
-          return res.status(200).json({ message: "User not founded." });
-        }
-        return res.status(200).json({user});
-      } catch (error) {
-        console.log("error", error);
-        return res.status(200).json({ error: error });
+      const user = await User.findById({ _id: req.body.id }).select(
+        "-password"
+      );
+      if (!user) {
+        return res.status(200).json({ message: "User not founded." });
       }
+      return res.status(200).json({ user });
+    } catch (error) {
+      console.log("error", error);
+      return res.status(200).json({ error: error });
     }
-  );
+  }
+);
 module.exports = router;
