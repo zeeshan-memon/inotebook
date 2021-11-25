@@ -109,7 +109,7 @@ router.delete(
         return res.status(200).send("Not allowed");
       }
       note = await Notes.findByIdAndDelete(req.params.id);
-      res.status(200).send("Note deleted successfully");
+      res.status(200).json({note});
     } catch (error) {
       console.log("error", error);
       res.status(200).json({ error: error });

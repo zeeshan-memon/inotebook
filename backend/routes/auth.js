@@ -25,7 +25,7 @@ router.post(
 
       const existingUser = await User.findOne({ email: req.body.email });
       if (existingUser) {
-        res.status(200).json({ message: "User already exists" });
+       return res.status(200).json({ message: "User already exists" });
       }
       const salt = await bcrypt.genSalt(10);
       req.body.password = await bcrypt.hash(req.body.password, salt);
@@ -54,20 +54,20 @@ router.post(
     try {
       const errors = validationResult(req);
       if (!errors.isEmpty()) {
-        res.status(200).json({ errors: errors.array() });
+       return res.status(200).json({success:false, message: errors.array() });
       }
 
       const user = await User.findOne({ email: req.body.email });
       if (!user) {
-        res
+       return res
           .status(200)
-          .json({ message: "Please try to login with correct credentials." });
+          .json({success:false, message: "Please try to login with correct credentials." });
       }
       const password = await bcrypt.compare(req.body.password, user.password);
       if (!password) {
-        res
+       return res
           .status(200)
-          .json({ message: "Please try to login with correct credentials." });
+          .json({success:false, message: "Please try to login with correct credentials." });
       }
       const data = {
         user: {
@@ -75,10 +75,10 @@ router.post(
         },
       };
       const token = jwt.sign(data, "shhhhh");
-      return res.status(200).json({ token });
+      return res.status(200).json({success:true, token });
     } catch (error) {
       console.log("error", error);
-      return res.status(200).json({ error: error });
+      return res.status(200).json({success:false, message: error });
     }
   }
 );
