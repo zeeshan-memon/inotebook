@@ -20,26 +20,26 @@ router.post(
     try {
       const errors = validationResult(req);
       if (!errors.isEmpty()) {
-        return res.status(200).json({ errors: errors.array() });
+        return res.status(200).json({ success:false, message: errors.array()[0].msg });
       }
 
       const existingUser = await User.findOne({ email: req.body.email });
       if (existingUser) {
-       return res.status(200).json({ message: "User already exists" });
+       return res.status(200).json({success:false, message: "User already exists" });
       }
       const salt = await bcrypt.genSalt(10);
       req.body.password = await bcrypt.hash(req.body.password, salt);
       const user = await User.create(req.body);
-      const data = {
+      const token = {
         user: {
           id: user._id,
         },
       };
       // const token = jwt.sign(data, "shhhhh");
-      res.status(200).json({ data });
+      res.status(200).json({ success:true, token });
     } catch (error) {
       console.log("error", error);
-      res.status(200).json({ error: error });
+      res.status(200).json({ success:false, message: error });
     }
   }
 );

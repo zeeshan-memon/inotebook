@@ -6,9 +6,9 @@ import {
 import About from "./components/About";
 import Home from "./components/Home";
 import Navbar from "./components/Navbar";
-import NotesState from './Context/Notes/NotesState';
-import Login from './components/Login';
 import Signup from './components/Signup';
+import Login from './components/Login';
+import NotesState from './Context/Notes/NotesState';
 function App() {
  
   return (
