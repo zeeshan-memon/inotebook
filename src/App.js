@@ -8,14 +8,18 @@ import Home from "./components/Home";
 import Navbar from "./components/Navbar";
 import Signup from './components/Signup';
 import Login from './components/Login';
+import Alert from './components/Alert';
 import NotesState from './Context/Notes/NotesState';
+import AlertState from './Context/alert/AlertState';
+
 function App() {
- 
   return (
     <>
-    <NotesState>
+   <AlertState> 
+   <NotesState>
     <Router>
-    <Navbar/>  
+    <Navbar/>
+    <Alert/>
     <div className="container">
     <Switch>
           <Route exact path="/">
@@ -33,7 +37,8 @@ function App() {
         </Switch>
         </div>
     </Router>
-    </NotesState>
+  </NotesState>
+  </AlertState>
     </>
   );
 }

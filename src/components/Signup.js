@@ -1,9 +1,11 @@
-import React, {useState} from 'react'
+import React, {useState, useContext} from 'react'
 import { useHistory } from 'react-router-dom'
-
+import alertContext from '../Context/alert/AlertContext';
 
 export default function Signup() {
     let history = useHistory();
+    const context = useContext(alertContext);
+    const {showAlert} = context;
     const [credentials, setcCedentials] = useState({name:"", email:"", password:"", cpassword:""})
     const onChange = (e)=>{
         setcCedentials({...credentials, [e.target.name]:e.target.value})
@@ -21,19 +23,22 @@ export default function Signup() {
       const json = await response.json();
       console.log(json);
       if(json.success){
+            showAlert('Successfully logedin ', 'success');
             localStorage.setItem("token", json.token);
             history.push("/");
       }
       else{
-          alert(json.message)
+        //   alert(json.message)
+        showAlert(json.message, 'danger');
       }
     }
     return (
         <div className="container">
+            <h1>Signup</h1>
             <form onSubmit={submitHandler}>
             <div className="mb-3">
                 <label htmlFor="name" className="form-label">Name</label>
-                <input type="text" minLength={5} required onChange={onChange} value={credentials.name} className="form-control" name="name" id="name" aria-describedby="emailHelp"/>
+                <input type="text" minLength={3} required onChange={onChange} value={credentials.name} className="form-control" name="name" id="name" aria-describedby="emailHelp"/>
             </div>
             <div className="mb-3">
                 <label htmlFor="email" className="form-label">Email address</label>

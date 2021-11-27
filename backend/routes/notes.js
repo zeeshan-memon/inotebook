@@ -8,7 +8,7 @@ router.get("/fetchallnotes", fetchUser, async (req, res) => {
   try {
     const notes = await Notes.find({ user: req.user.id });
     if (!notes) {
-      res.status(200).json({ message: "Notes not founded." });
+      res.status(200).json({ note: [] });
     }
     res.status(200).json({ notes });
   } catch (error) {

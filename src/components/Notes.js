@@ -1,4 +1,5 @@
 import React, { useContext, useEffect, useRef,useState } from "react";
+import { useHistory } from "react-router-dom";
 import noteContext from "../Context/Notes/NotesContext";
 import AddNote from "./AddNote";
 import NoteItem from "./NoteItem";
@@ -6,10 +7,15 @@ import NoteItem from "./NoteItem";
 export default function Notes() {
   const context = useContext(noteContext);
   const { notes, getNotes, editNote} = context;
-
+  const history = useHistory();
   const [note, setNote] = useState({id:"", etitle:"", edescription:"", etag:""})
   useEffect(() => {
-   getNotes()
+    if(localStorage.getItem('token')){
+      getNotes()
+    }
+    else{
+      history.push("/login")
+    }
    // eslint-disable-next-line
   }, [])
 
@@ -18,14 +24,15 @@ export default function Notes() {
 
   const updateNote = (note)=>{
     ref.current.click();
-    setNote({id:note._id, etitle: note.title, edescription: note.description, etag: note.tag})
+    setNote({id:note._id, etitle: note.title, edescription: note.description, etag: note.tag});
+    
   }
 
   const onChange =(e)=>{
     setNote({...note, [e.target.name]: e.target.value})
 }
 const onClickAddNote =(e)=>{
-  editNote(note.id, note.etitle, note.edescription,)
+  editNote(note.id, note.etitle, note.edescription);
   refClose.current.click();
 }
   return (
@@ -91,9 +98,9 @@ const onClickAddNote =(e)=>{
       <div className="row my-3">
         <h2>Your Notes</h2>
         <div className="container">
-         {notes.length === 0 && 'No notes to display'}
+         {notes && notes.length === 0 && 'No notes to display'}
          </div>
-        {notes.map((note, index) => {
+        {notes && notes.map((note, index) => {
           return <NoteItem key={index} updateNote={updateNote} note={note} />;
         })}
       </div>

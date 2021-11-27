@@ -14,7 +14,7 @@ router.post(
     body("password", "Password length must be greater than 5").isLength({
       min: 5,
     }),
-    body("name", "length must be greater than 5").isLength({ min: 5 }),
+    body("name", "length must be greater than 5").isLength({ min: 3 }),
   ],
   async (req, res) => {
     try {
@@ -30,13 +30,13 @@ router.post(
       const salt = await bcrypt.genSalt(10);
       req.body.password = await bcrypt.hash(req.body.password, salt);
       const user = await User.create(req.body);
-      const token = {
+      const data = {
         user: {
           id: user._id,
         },
       };
-      // const token = jwt.sign(data, "shhhhh");
-      res.status(200).json({ success:true, token });
+      const token = jwt.sign(data, "shhhhh");
+      return res.status(200).json({success:true, token });
     } catch (error) {
       console.log("error", error);
       res.status(200).json({ success:false, message: error });
@@ -54,7 +54,7 @@ router.post(
     try {
       const errors = validationResult(req);
       if (!errors.isEmpty()) {
-       return res.status(200).json({success:false, message: errors.array() });
+       return res.status(200).json({success:false, message: errors.array()[0].msg });
       }
 
       const user = await User.findOne({ email: req.body.email });

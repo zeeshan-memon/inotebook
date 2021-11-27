@@ -1,7 +1,10 @@
-import React, {useState} from 'react'
+import React, {useState, useContext} from 'react'
 import { useHistory } from 'react-router-dom';
+import alertContext from '../Context/alert/AlertContext';
 
 export default function Login() {
+    const context = useContext(alertContext);
+    const {showAlert} = context;
     const [credentials, setCredentials] = useState({email:"", password:""});
     let history = useHistory();
     const onChange = (e)=>{
@@ -20,11 +23,13 @@ export default function Login() {
       const json = await response.json();
       console.log(json);
       if(json.success){
+        showAlert('Logged in Successfully', 'success');
             localStorage.setItem("token", json.token);
             history.push("/");
       }
       else{
-          alert(json.message)
+        //   alert(json.message)
+        showAlert(json.message, 'danger');
       }
     }
     return (
