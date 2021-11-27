@@ -33,8 +33,8 @@ export default function Signup() {
       }
     }
     return (
-        <div className="container">
-            <h1>Signup</h1>
+        <div className="container mt-2">
+            <h2>Create an account to use iNotebook</h2>
             <form onSubmit={submitHandler}>
             <div className="mb-3">
                 <label htmlFor="name" className="form-label">Name</label>
