@@ -11,6 +11,7 @@ import Login from './components/Login';
 import Alert from './components/Alert';
 import NotesState from './Context/Notes/NotesState';
 import AlertState from './Context/alert/AlertState';
+import NotesDetials from './components/NotesDetials';
 
 function App() {
   return (
@@ -33,6 +34,9 @@ function App() {
           </Route>
           <Route exact path="/signup">
             <Signup/>
+          </Route>
+          <Route exact path="/notesdetails/:id">
+            <NotesDetials/>
           </Route>
         </Switch>
         </div>

@@ -1,4 +1,5 @@
 import React, {useContext} from "react";
+import { Link } from "react-router-dom";
 import noteContext from "../Context/Notes/NotesContext";
 export default function NoteItem(props) {
   const context = useContext(noteContext)
@@ -13,7 +14,9 @@ export default function NoteItem(props) {
           <i className="fas fa-trash-alt mx-2" onClick={()=>{deleteNote(note._id)}}></i>
           <i className="fas fa-edit mx-2" onClick={()=>{updateNote(note)}}></i>
             </div>
+            <Link to={`/notesdetails/${note._id}`}>
           <p className="card-text">{note.description}</p>
+          </Link>
         </div>
       </div>
     </div>
